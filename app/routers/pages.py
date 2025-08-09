@@ -27,3 +27,7 @@ async def dashboard(request: Request):
 @router.get("/contacts", response_class=HTMLResponse)
 async def contacts(request: Request):
     return templates.TemplateResponse("contacts.html", {"request": request})
+
+@router.get("/templates", response_class=HTMLResponse)
+async def templates(request: Request):
+    return templates.TemplateResponse("templates.html", {"request": request})

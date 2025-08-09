@@ -79,6 +79,25 @@ def create_template(db: Session, template: schemas.TemplateCreate):
     db.refresh(db_template)
     return db_template
 
+def get_template(db: Session, template_id: int):
+    return db.query(models.Template).filter(models.Template.id == template_id).first()
+
+def update_template(db: Session, template_id: int, template: schemas.TemplateCreate):
+    db_template = get_template(db, template_id)
+    if db_template:
+        for key, value in template.model_dump().items():
+            setattr(db_template, key, value)
+        db.commit()
+        db.refresh(db_template)
+    return db_template
+
+def delete_template(db: Session, template_id: int):
+    db_template = get_template(db, template_id)
+    if db_template:
+        db.delete(db_template)
+        db.commit()
+    return db_template
+
 import csv
 import io
 
