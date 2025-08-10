@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Bulk Email</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/contacts">Contacts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/templates">Templates</a></li>
+                <li class="nav-item"><a class="nav-link" href="/groups">Groups</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/settings">Settings</a></li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2>SMTP Settings</h2>
+    <p>Configure your SMTP server to send emails.</p>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="smtp-settings-form">
+                <div class="mb-3">
+                    <label for="server" class="form-label">SMTP Server</label>
+                    <input type="text" class="form-control" id="server" required>
+                </div>
+                <div class="mb-3">
+                    <label for="port" class="form-label">Port</label>
+                    <input type="number" class="form-control" id="port" required>
+                </div>
+                <div class="mb-3">
+                    <label for="sender_email" class="form-label">Sender Email Address</label>
+                    <input type="email" class="form-control" id="sender_email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password">
+                    <div class="form-text">Leave blank to keep the existing password.</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    loadSmtpSettings();
+
+    document.getElementById("smtp-settings-form").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        const data = {
+            server: document.getElementById("server").value,
+            port: parseInt(document.getElementById("port").value),
+            sender_email: document.getElementById("sender_email").value,
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value
+        };
+
+        const response = await fetch("/settings/smtp", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            alert("Settings saved successfully!");
+            document.getElementById("password").value = ""; // Clear password field
+        } else {
+            alert("Failed to save settings.");
+        }
+    });
+});
+
+async function loadSmtpSettings() {
+    const response = await fetch("/settings/smtp");
+    if (response.ok) {
+        const settings = await response.json();
+        document.getElementById("server").value = settings.server;
+        document.getElementById("port").value = settings.port;
+        document.getElementById("sender_email").value = settings.sender_email || '';
+        document.getElementById("username").value = settings.username || '';
+    }
+}
+</script>
+{% endblock %}

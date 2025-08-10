@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}New Campaign{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Bulk Email</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/contacts">Contacts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/templates">Templates</a></li>
+                <li class="nav-item"><a class="nav-link" href="/groups">Groups</a></li>
+                <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2>Create New Campaign</h2>
+
+    <div class="card">
+        <div class="card-header">Broadcast Campaign</div>
+        <div class="card-body">
+            <form id="broadcast-form">
+                <div class="mb-3">
+                    <label for="campaign-name" class="form-label">Campaign Name</label>
+                    <input type="text" class="form-control" id="campaign-name" required placeholder="e.g., 'Monthly Newsletter - August'">
+                </div>
+                <div class="mb-3">
+                    <label for="template-select" class="form-label">Select a Template</label>
+                    <select class="form-select" id="template-select" required></select>
+                </div>
+                <button type="submit" class="btn btn-danger">Send Broadcast to All Contacts</button>
+                <div class="form-text text-muted mt-2">
+                    This will immediately send an email to every contact in your list.
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    loadTemplates();
+
+    document.getElementById("broadcast-form").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        if (!confirm("Are you sure you want to send this broadcast to ALL contacts?")) return;
+
+        const campaignName = document.getElementById("campaign-name").value;
+        const templateId = document.getElementById("template-select").value;
+
+        const response = await fetch("/campaigns/broadcast", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ name: campaignName, template_id: parseInt(templateId) })
+        });
+
+        if (response.ok) {
+            alert("Broadcast campaign has been sent successfully!");
+            window.location.href = '/dashboard'; // Redirect to dashboard
+        } else {
+            alert("Failed to send campaign: " + (await response.json()).detail);
+        }
+    });
+});
+
+async function loadTemplates() {
+    const response = await fetch("/templates/");
+    const templates = await response.json();
+    const select = document.getElementById("template-select");
+    select.innerHTML = '<option value="">-- Select a template --</option>';
+    templates.forEach(template => {
+        select.innerHTML += `<option value="${template.id}">${template.name}</option>`;
+    });
+}
+</script>
+{% endblock %}

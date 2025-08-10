@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Group Details{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Bulk Email</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/contacts">Contacts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/templates">Templates</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/groups">Groups</a></li>
+                <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
+            </ul>
+             <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <a href="/groups">&larr; Back to Groups</a>
+    <h2 class="mt-2">Group: <span id="group-name"></span></h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Contacts in this Group</h3>
+            <ul class="list-group" id="contacts-in-group"></ul>
+        </div>
+        <div class="col-md-6">
+            <h3>Add Contacts to Group</h3>
+            <form id="add-contact-to-group-form">
+                <div class="mb-3">
+                    <label for="contact-select" class="form-label">Select a contact to add:</label>
+                    <select class="form-select" id="contact-select" required></select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add to Group</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const groupId = window.location.pathname.split('/').pop();
+
+    document.addEventListener("DOMContentLoaded", function() {
+        loadGroupDetails();
+        loadAvailableContacts();
+
+        document.getElementById("add-contact-to-group-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const contactId = document.getElementById("contact-select").value;
+            if (!contactId) return;
+            const response = await fetch(`/groups/${groupId}/contacts/${contactId}`, {method: "POST"});
+            if (response.ok) {
+                loadGroupDetails();
+                loadAvailableContacts();
+            } else {
+                alert("Failed to add contact.");
+            }
+        });
+    });
+
+    async function loadGroupDetails() {
+        const response = await fetch(`/groups/${groupId}`);
+        const group = await response.json();
+        document.getElementById("group-name").textContent = group.name;
+        const list = document.getElementById("contacts-in-group");
+        list.innerHTML = "";
+        if (group.contacts.length === 0) {
+            list.innerHTML = '<li class="list-group-item">This group has no contacts.</li>';
+        } else {
+            group.contacts.forEach(contact => {
+                list.innerHTML += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${contact.first_name || ''} ${contact.last_name || ''} (${contact.email})
+                        <button class="btn btn-sm btn-danger" onclick="removeContact(${contact.id})">&times;</button>
+                    </li>
+                `;
+            });
+        }
+    }
+
+    async function loadAvailableContacts() {
+        const [allContactsRes, groupRes] = await Promise.all([
+            fetch('/contacts/'),
+            fetch(`/groups/${groupId}`)
+        ]);
+        const allContacts = await allContactsRes.json();
+        const group = await groupRes.json();
+        const contactsInGroupIds = new Set(group.contacts.map(c => c.id));
+        const availableContacts = allContacts.filter(c => !contactsInGroupIds.has(c.id));
+        const select = document.getElementById("contact-select");
+        select.innerHTML = '<option value="">-- Select a contact --</option>';
+        availableContacts.forEach(contact => {
+            select.innerHTML += `<option value="${contact.id}">${contact.first_name || ''} ${contact.last_name || ''} (${contact.email})</option>`;
+        });
+    }
+
+    window.removeContact = async function(contactId) {
+        const response = await fetch(`/groups/${groupId}/contacts/${contactId}`, {method: "DELETE"});
+        if (response.ok) {
+            loadGroupDetails();
+            loadAvailableContacts();
+        } else {
+            alert("Failed to remove contact.");
+        }
+    }
+</script>
+{% endblock %}
