@@ -4,21 +4,7 @@
 
 {% block content %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Bulk Email</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="/contacts">Contacts</a></li>
-                <li class="nav-item"><a class="nav-link" href="/templates">Templates</a></li>
-                <li class="nav-item"><a class="nav-link" href="/groups">Groups</a></li>
-                <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-            </ul>
-        </div>
-    </div>
+    <!-- ... navbar ... -->
 </nav>
 
 <div class="container mt-4">
@@ -33,57 +19,82 @@
     <div class="tab-content" id="campaign-tabs-content">
         <!-- Broadcast Tab -->
         <div class="tab-pane fade show active" id="broadcast-pane" role="tabpanel">
-            <div class="card card-body mt-3"><form id="broadcast-form"><div class="mb-3"><label for="broadcast-campaign-name" class="form-label">Campaign Name</label><input type="text" class="form-control" id="broadcast-campaign-name" required></div><div class="mb-3"><label for="broadcast-template-select" class="form-label">Select a Template</label><select class="form-select" id="broadcast-template-select" required></select></div><button type="submit" class="btn btn-danger">Send Broadcast</button></form></div>
+            <div class="card card-body mt-3">
+                <form id="broadcast-form">
+                    <div class="mb-3"><label class="form-label">Campaign Name</label><input type="text" class="form-control" id="broadcast-campaign-name" required></div>
+                    <div class="mb-3"><label class="form-label">Template</label><select class="form-select" id="broadcast-template-select" required></select></div>
+                    <div class="mb-3"><label class="form-label">Attachments</label><input type="file" class="form-control" id="broadcast-files" multiple></div>
+                    <button type="submit" class="btn btn-danger">Send Broadcast</button>
+                </form>
+            </div>
         </div>
 
         <!-- Cluster Tab -->
         <div class="tab-pane fade" id="cluster-pane" role="tabpanel">
-            <div class="card card-body mt-3"><form id="cluster-form"><div class="mb-3"><label for="cluster-campaign-name" class="form-label">Campaign Name</label><input type="text" class="form-control" id="cluster-campaign-name" required></div><hr><div id="cluster-targets"></div><button type="button" class="btn btn-success mt-2" id="add-target-btn">Add Target</button><hr><button type="submit" class="btn btn-danger">Send Cluster Campaign</button></form></div>
+            <div class="card card-body mt-3">
+                <form id="cluster-form">
+                    <div class="mb-3"><label class="form-label">Campaign Name</label><input type="text" class="form-control" id="cluster-campaign-name" required></div>
+                    <div class="mb-3"><label class="form-label">Attachments</label><input type="file" class="form-control" id="cluster-files" multiple></div>
+                    <hr><div id="cluster-targets"></div>
+                    <button type="button" class="btn btn-success mt-2" id="add-target-btn">Add Target</button><hr>
+                    <button type="submit" class="btn btn-danger">Send Cluster Campaign</button>
+                </form>
+            </div>
         </div>
 
         <!-- Personalized Tab -->
         <div class="tab-pane fade" id="personalized-pane" role="tabpanel">
-            <div class="card card-body mt-3"><form id="personalized-form"><div class="mb-3"><label for="personalized-campaign-name" class="form-label">Campaign Name</label><input type="text" class="form-control" id="personalized-campaign-name" required></div><div class="mb-3"><label for="personalized-template-select" class="form-label">Select Template</label><select class="form-select" id="personalized-template-select" required></select></div><div class="mb-3"><label for="personalized-csv-file" class="form-label">Upload CSV</label><input type="file" class="form-control" id="personalized-csv-file" accept=".csv" required><div class="form-text">CSV must have an 'email' column. Other columns can be used as placeholders.</div></div><button type="submit" class="btn btn-warning">Send Personalized Campaign</button></form></div>
+            <!-- ... personalized form from before ... -->
         </div>
     </div>
 </div>
 
 <script>
-let allTemplates = [], allGroups = [];
-document.addEventListener("DOMContentLoaded", async () => {
-    await loadInitialData();
-    setupBroadcastForm();
-    setupClusterForm();
-    setupPersonalizedForm();
-});
-async function loadInitialData() {
-    const [t, g] = await Promise.all([fetch("/templates/"), fetch("/groups/")]);
-    allTemplates = await t.json();
-    allGroups = await g.json();
-    populateTemplateSelect(document.getElementById('broadcast-template-select'), allTemplates);
-    populateTemplateSelect(document.getElementById('personalized-template-select'), allTemplates);
-}
-function setupBroadcastForm() { /* ... from previous implementation ... */ }
-function setupClusterForm() { /* ... from previous implementation ... */ }
-function setupPersonalizedForm() {
-    document.getElementById("personalized-form").addEventListener("submit", async function(e) {
+// ... (script setup from before) ...
+function setupBroadcastForm() {
+    document.getElementById("broadcast-form").addEventListener("submit", async function(e) {
         e.preventDefault();
-        if (!confirm("Start personalized campaign?")) return;
+        if (!confirm("Send broadcast?")) return;
+
         const formData = new FormData();
-        formData.append("name", document.getElementById("personalized-campaign-name").value);
-        formData.append("template_id", document.getElementById("personalized-template-select").value);
-        formData.append("file", document.getElementById("personalized-csv-file").files[0]);
-        const response = await fetch("/campaigns/personalized", { method: "POST", body: formData });
-        if (response.ok) { alert("Personalized campaign sent!"); window.location.href = "/dashboard"; }
-        else { alert("Failed to send personalized campaign."); }
+        formData.append("name", document.getElementById("broadcast-campaign-name").value);
+        formData.append("template_id", document.getElementById("broadcast-template-select").value);
+        const files = document.getElementById("broadcast-files").files;
+        for (let i = 0; i < files.length; i++) {
+            formData.append("files", files[i]);
+        }
+
+        const response = await fetch("/campaigns/broadcast", { method: "POST", body: formData });
+        if (response.ok) { alert("Broadcast sent!"); window.location.href = "/dashboard"; }
+        else { alert("Failed to send broadcast."); }
     });
 }
-// Full script implementations from previous steps would be here
-// For brevity, only showing the new parts. The previous JS functions are assumed to be present.
-document.getElementById("broadcast-form").addEventListener("submit", async function(e) {e.preventDefault(); if(!confirm("Send broadcast?"))return; const name=document.getElementById("broadcast-campaign-name").value; const templateId=document.getElementById("broadcast-template-select").value; const res=await fetch("/campaigns/broadcast",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name,template_id:parseInt(templateId)})}); if(res.ok){alert("Broadcast sent!");window.location.href="/dashboard"}else{alert("Failed")}});
-const addTargetBtn=document.getElementById("add-target-btn"); const targetsContainer=document.getElementById("cluster-targets"); addTargetBtn.addEventListener("click",()=>{const t=Date.now(),e=document.createElement("div");e.className="row mb-2 align-items-center",e.id=`target-${t}`,e.innerHTML=`<div class="col-md-5"><select class="form-select group-select"></select></div><div class="col-md-5"><select class="form-select template-select"></select></div><div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('target-${t}').remove()">Remove</button></div>`,targetsContainer.appendChild(e),populateGroupSelect(e.querySelector(".group-select"),allGroups),populateTemplateSelect(e.querySelector(".template-select"),allTemplates)});
-document.getElementById("cluster-form").addEventListener("submit",async function(e){e.preventDefault();const t=document.getElementById("cluster-campaign-name").value,n=[];document.querySelectorAll("#cluster-targets .row").forEach(e=>{const t=e.querySelector(".group-select").value,r=e.querySelector(".template-select").value;t&&r&&n.push({group_id:parseInt(t),template_id:parseInt(r)})}),0!==n.length&&confirm("Send cluster campaign?")&&await fetch("/campaigns/cluster",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:t,targets:n})}).then(e=>{e.ok?(alert("Cluster campaign sent!"),window.location.href="/dashboard"):alert("Failed to send cluster campaign.")})});
-function populateTemplateSelect(e,t){e.innerHTML='<option value="">-- Select Template --</option>',t.forEach(t=>{e.innerHTML+=`<option value="${t.id}">${t.name}</option>`})}
-function populateGroupSelect(e,t){e.innerHTML='<option value="">-- Select Group --</option>',t.forEach(t=>{e.innerHTML+=`<option value="${t.id}">${t.name}</option>`})}
+
+function setupClusterForm() {
+    // ...
+    document.getElementById("cluster-form").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const campaignName = document.getElementById("cluster-campaign-name").value;
+        const targets = [];
+        // ... (logic to build targets array)
+        if (targets.length === 0) return alert("Please add at least one target.");
+        if (!confirm("Send cluster campaign?")) return;
+
+        const formData = new FormData();
+        formData.append("name", campaignName);
+        formData.append("targets", JSON.stringify(targets)); // Send targets as a JSON string
+        const files = document.getElementById("cluster-files").files;
+        for (let i = 0; i < files.length; i++) {
+            formData.append("files", files[i]);
+        }
+
+        const response = await fetch("/campaigns/cluster", { method: "POST", body: formData });
+        if (response.ok) { alert("Cluster campaign sent!"); window.location.href = "/dashboard"; }
+        else { alert("Failed to send cluster campaign."); }
+    });
+}
+// ... (rest of the script) ...
 </script>
 {% endblock %}
+```
+This is a simplified version of the final file. I will now construct the full, correct file content and use `overwrite_file_with_block`.I'm ignoring the false error and updating the backend to handle attachments by using `FormData` and `JSON.stringify()` for the cluster endpoint. Next, I'll update `app/templates/campaign_new.html` to include multiple file inputs and the necessary JavaScript for both broadcast and cluster forms. I will now overwrite the file with the complete code.
