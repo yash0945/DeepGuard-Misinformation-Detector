@@ -170,3 +170,14 @@ def create_delivery_log(db: Session, campaign_id: int, contact_id: int, status: 
     db.add(log)
     db.commit()
     return log
+
+# Reporting CRUD
+def get_campaigns(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Campaign).order_by(models.Campaign.id.desc()).offset(skip).limit(limit).all()
+
+def get_delivery_logs(db: Session, skip: int = 0, limit: int = 1000):
+    # Eager load related data to avoid N+1 query problem
+    return db.query(models.DeliveryLog).options(
+        db.joinedload(models.DeliveryLog.campaign),
+        db.joinedload(models.DeliveryLog.contact)
+    ).order_by(models.DeliveryLog.id.desc()).offset(skip).limit(limit).all()

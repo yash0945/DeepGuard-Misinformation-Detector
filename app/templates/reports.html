@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Bulk Email</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/contacts">Contacts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/templates">Templates</a></li>
+                <li class="nav-item"><a class="nav-link" href="/groups">Groups</a></li>
+                <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/reports">Reports</a></li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Reports</h2>
+        <a href="/reports/export" class="btn btn-primary">Export All Delivery Logs</a>
+    </div>
+
+    <h4>Campaign History</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Mode</th>
+                <th>Status</th>
+                <th>Scheduled/Sent Time</th>
+            </tr>
+        </thead>
+        <tbody id="campaigns-tbody">
+            <!-- Campaign history will be loaded here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    loadCampaigns();
+});
+
+async function loadCampaigns() {
+    const response = await fetch("/reports/campaigns");
+    const campaigns = await response.json();
+    const tbody = document.getElementById("campaigns-tbody");
+    tbody.innerHTML = "";
+    campaigns.forEach(campaign => {
+        const row = `
+            <tr>
+                <td>${campaign.id}</td>
+                <td>${campaign.name}</td>
+                <td>${campaign.mode}</td>
+                <td><span class="badge bg-secondary">${campaign.status}</span></td>
+                <td>${new Date(campaign.scheduled_time).toLocaleString()}</td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+</script>
+{% endblock %}
