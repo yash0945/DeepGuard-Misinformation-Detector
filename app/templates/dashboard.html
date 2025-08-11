@@ -3,39 +3,7 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Bulk Email</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" href="/dashboard">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/contacts">Contacts</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/templates">Templates</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/groups">Groups</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/settings">Settings</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-4">
-    <h1>Dashboard</h1>
-    <p>Welcome to the Bulk Email Automation Web Application.</p>
-    <!-- Quick stats and links will go here -->
-</div>
+<h1>Dashboard</h1>
+<p>Welcome to the Bulk Email Automation Web Application.</p>
+<a href="/campaigns/new" class="btn btn-primary">Create New Campaign</a>
 {% endblock %}

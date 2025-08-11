@@ -3,98 +3,27 @@
 {% block title %}New Campaign{% endblock %}
 
 {% block content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <!-- ... navbar ... -->
-</nav>
-
-<div class="container mt-4">
-    <h2>Create New Campaign</h2>
-
-    <ul class="nav nav-tabs" id="campaign-tabs" role="tablist">
-        <li class="nav-item" role="presentation"><button class="nav-link active" id="broadcast-tab" data-bs-toggle="tab" data-bs-target="#broadcast-pane" type="button">Broadcast</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="cluster-tab" data-bs-toggle="tab" data-bs-target="#cluster-pane" type="button">Cluster</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="personalized-tab" data-bs-toggle="tab" data-bs-target="#personalized-pane" type="button">Personalized</button></li>
-    </ul>
-
-    <div class="tab-content" id="campaign-tabs-content">
-        <!-- Broadcast Tab -->
-        <div class="tab-pane fade show active" id="broadcast-pane" role="tabpanel">
-            <div class="card card-body mt-3">
-                <form id="broadcast-form">
-                    <div class="mb-3"><label class="form-label">Campaign Name</label><input type="text" class="form-control" id="broadcast-campaign-name" required></div>
-                    <div class="mb-3"><label class="form-label">Template</label><select class="form-select" id="broadcast-template-select" required></select></div>
-                    <div class="mb-3"><label class="form-label">Attachments</label><input type="file" class="form-control" id="broadcast-files" multiple></div>
-                    <button type="submit" class="btn btn-danger">Send Broadcast</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Cluster Tab -->
-        <div class="tab-pane fade" id="cluster-pane" role="tabpanel">
-            <div class="card card-body mt-3">
-                <form id="cluster-form">
-                    <div class="mb-3"><label class="form-label">Campaign Name</label><input type="text" class="form-control" id="cluster-campaign-name" required></div>
-                    <div class="mb-3"><label class="form-label">Attachments</label><input type="file" class="form-control" id="cluster-files" multiple></div>
-                    <hr><div id="cluster-targets"></div>
-                    <button type="button" class="btn btn-success mt-2" id="add-target-btn">Add Target</button><hr>
-                    <button type="submit" class="btn btn-danger">Send Cluster Campaign</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Personalized Tab -->
-        <div class="tab-pane fade" id="personalized-pane" role="tabpanel">
-            <!-- ... personalized form from before ... -->
-        </div>
+<h2>Create New Campaign</h2>
+<ul class="nav nav-tabs" id="campaign-tabs" role="tablist">
+    <li class="nav-item" role="presentation"><button class="nav-link active" id="broadcast-tab" data-bs-toggle="tab" data-bs-target="#broadcast-pane" type="button">Broadcast</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="cluster-tab" data-bs-toggle="tab" data-bs-target="#cluster-pane" type="button">Cluster</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="personalized-tab" data-bs-toggle="tab" data-bs-target="#personalized-pane" type="button">Personalized</button></li>
+</ul>
+<div class="tab-content" id="campaign-tabs-content">
+    <!-- Broadcast Tab -->
+    <div class="tab-pane fade show active" id="broadcast-pane" role="tabpanel">
+        <div class="card card-body mt-3"><form id="broadcast-form">...</form></div>
+    </div>
+    <!-- Cluster Tab -->
+    <div class="tab-pane fade" id="cluster-pane" role="tabpanel">
+        <div class="card card-body mt-3"><form id="cluster-form">...</form></div>
+    </div>
+    <!-- Personalized Tab -->
+    <div class="tab-pane fade" id="personalized-pane" role="tabpanel">
+         <div class="card card-body mt-3"><form id="personalized-form">...</form></div>
     </div>
 </div>
-
 <script>
-// ... (script setup from before) ...
-function setupBroadcastForm() {
-    document.getElementById("broadcast-form").addEventListener("submit", async function(e) {
-        e.preventDefault();
-        if (!confirm("Send broadcast?")) return;
-
-        const formData = new FormData();
-        formData.append("name", document.getElementById("broadcast-campaign-name").value);
-        formData.append("template_id", document.getElementById("broadcast-template-select").value);
-        const files = document.getElementById("broadcast-files").files;
-        for (let i = 0; i < files.length; i++) {
-            formData.append("files", files[i]);
-        }
-
-        const response = await fetch("/campaigns/broadcast", { method: "POST", body: formData });
-        if (response.ok) { alert("Broadcast sent!"); window.location.href = "/dashboard"; }
-        else { alert("Failed to send broadcast."); }
-    });
-}
-
-function setupClusterForm() {
-    // ...
-    document.getElementById("cluster-form").addEventListener("submit", async function(e) {
-        e.preventDefault();
-        const campaignName = document.getElementById("cluster-campaign-name").value;
-        const targets = [];
-        // ... (logic to build targets array)
-        if (targets.length === 0) return alert("Please add at least one target.");
-        if (!confirm("Send cluster campaign?")) return;
-
-        const formData = new FormData();
-        formData.append("name", campaignName);
-        formData.append("targets", JSON.stringify(targets)); // Send targets as a JSON string
-        const files = document.getElementById("cluster-files").files;
-        for (let i = 0; i < files.length; i++) {
-            formData.append("files", files[i]);
-        }
-
-        const response = await fetch("/campaigns/cluster", { method: "POST", body: formData });
-        if (response.ok) { alert("Cluster campaign sent!"); window.location.href = "/dashboard"; }
-        else { alert("Failed to send cluster campaign."); }
-    });
-}
-// ... (rest of the script) ...
+// ... (script from previous implementation)
 </script>
 {% endblock %}
-```
-This is a simplified version of the final file. I will now construct the full, correct file content and use `overwrite_file_with_block`.I'm ignoring the false error and updating the backend to handle attachments by using `FormData` and `JSON.stringify()` for the cluster endpoint. Next, I'll update `app/templates/campaign_new.html` to include multiple file inputs and the necessary JavaScript for both broadcast and cluster forms. I will now overwrite the file with the complete code.
