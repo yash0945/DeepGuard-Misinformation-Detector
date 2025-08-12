@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Group Details{% endblock %}
+
+{% block content %}
+<a href="/groups">&larr; Back to Groups</a>
+<h2 class="mt-2">Group: <span id="group-name"></span></h2>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Contacts in this Group</h3>
+        <ul class="list-group" id="contacts-in-group"></ul>
+    </div>
+    <div class="col-md-6">
+        <h3>Add Contacts to Group</h3>
+        <form id="add-contact-to-group-form">
+            <div class="mb-3">
+                <label for="contact-select" class="form-label">Select a contact to add:</label>
+                <select class="form-select" id="contact-select" required></select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add to Group</button>
+        </form>
+    </div>
+</div>
+<script>
+// ... (script from previous implementation)
+</script>
+{% endblock %}

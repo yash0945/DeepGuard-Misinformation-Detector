@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<h2>SMTP Settings</h2>
+<p>Configure your SMTP server to send emails.</p>
+<div class="card">
+    <div class="card-body">
+        <form id="smtp-settings-form">
+            <div class="mb-3"><label class="form-label">SMTP Server</label><input type="text" class="form-control" id="server" required></div>
+            <div class="mb-3"><label class="form-label">Port</label><input type="number" class="form-control" id="port" required></div>
+            <div class="mb-3"><label class="form-label">Sender Email Address</label><input type="email" class="form-control" id="sender_email" required></div>
+            <div class="mb-3"><label class="form-label">Username</label><input type="text" class="form-control" id="username"></div>
+            <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" id="password"><div class="form-text">Leave blank to keep existing.</div></div>
+            <div class="mb-3"><label class="form-label">Rate Limit (emails per minute)</label><input type="number" class="form-control" id="rate_limit_per_minute" value="60"><div class="form-text">Set to 0 for no limit. Default is 60.</div></div>
+            <button type="submit" class="btn btn-primary">Save Settings</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    loadSmtpSettings();
+    document.getElementById("smtp-settings-form").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const data = {
+            server: document.getElementById("server").value,
+            port: parseInt(document.getElementById("port").value),
+            sender_email: document.getElementById("sender_email").value,
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value,
+            rate_limit_per_minute: parseInt(document.getElementById("rate_limit_per_minute").value)
+        };
+        const response = await fetch("/settings/smtp", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
+        if (response.ok) {
+            alert("Settings saved!");
+            document.getElementById("password").value = "";
+        } else {
+            alert("Failed to save settings.");
+        }
+    });
+});
+
+async function loadSmtpSettings() {
+    const response = await fetch("/settings/smtp");
+    if (response.ok) {
+        const settings = await response.json();
+        document.getElementById("server").value = settings.server;
+        document.getElementById("port").value = settings.port;
+        document.getElementById("sender_email").value = settings.sender_email || '';
+        document.getElementById("username").value = settings.username || '';
+        document.getElementById("rate_limit_per_minute").value = settings.rate_limit_per_minute || 60;
+    }
+}
+</script>
+{% endblock %}

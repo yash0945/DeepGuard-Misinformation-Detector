@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Contacts{% endblock %}
+
+{% block content %}
+<h2>Contact Management</h2>
+<!-- Add Contact Form -->
+<div class="card mb-4">
+    <div class="card-header">Add New Contact</div>
+    <div class="card-body">
+        <form id="add-contact-form">
+            <div class="row">
+                <div class="col-md-4"><input type="email" class="form-control" id="email" placeholder="Email" required></div>
+                <div class="col-md-3"><input type="text" class="form-control" id="first_name" placeholder="First Name"></div>
+                <div class="col-md-3"><input type="text" class="form-control" id="last_name" placeholder="Last Name"></div>
+                <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Add Contact</button></div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- CSV Upload Form -->
+<div class="card mb-4">
+    <div class="card-header">Import Contacts from CSV</div>
+    <div class="card-body">
+        <form id="upload-csv-form">
+            <div class="input-group">
+                <input type="file" class="form-control" id="csv-file" accept=".csv" required>
+                <button class="btn btn-secondary" type="submit">Upload CSV</button>
+            </div>
+            <div class="form-text">CSV file should have a header row: email, first_name, last_name.</div>
+        </form>
+    </div>
+</div>
+<!-- Contacts Table -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Email</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody id="contacts-tbody"></tbody>
+</table>
+<script>
+// ... (script from previous implementation)
+</script>
+{% endblock %}

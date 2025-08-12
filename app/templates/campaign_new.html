@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}New Campaign{% endblock %}
+
+{% block content %}
+<h2>Create New Campaign</h2>
+<ul class="nav nav-tabs" id="campaign-tabs" role="tablist">
+    <li class="nav-item" role="presentation"><button class="nav-link active" id="broadcast-tab" data-bs-toggle="tab" data-bs-target="#broadcast-pane" type="button">Broadcast</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="cluster-tab" data-bs-toggle="tab" data-bs-target="#cluster-pane" type="button">Cluster</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="personalized-tab" data-bs-toggle="tab" data-bs-target="#personalized-pane" type="button">Personalized</button></li>
+</ul>
+<div class="tab-content" id="campaign-tabs-content">
+    <!-- Broadcast Tab -->
+    <div class="tab-pane fade show active" id="broadcast-pane" role="tabpanel">
+        <div class="card card-body mt-3"><form id="broadcast-form">...</form></div>
+    </div>
+    <!-- Cluster Tab -->
+    <div class="tab-pane fade" id="cluster-pane" role="tabpanel">
+        <div class="card card-body mt-3"><form id="cluster-form">...</form></div>
+    </div>
+    <!-- Personalized Tab -->
+    <div class="tab-pane fade" id="personalized-pane" role="tabpanel">
+         <div class="card card-body mt-3"><form id="personalized-form">...</form></div>
+    </div>
+</div>
+<script>
+// ... (script from previous implementation)
+</script>
+{% endblock %}

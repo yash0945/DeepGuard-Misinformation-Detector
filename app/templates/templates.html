@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Templates{% endblock %}
+
+{% block content %}
+<h2>Template Management</h2>
+<!-- Add/Edit Template Form -->
+<div class="card mb-4">
+    <div class="card-header"><span id="form-title">Add New Template</span></div>
+    <div class="card-body">
+        <form id="template-form">
+            <input type="hidden" id="template-id">
+            <div class="mb-3"><label class="form-label">Template Name</label><input type="text" class="form-control" id="name" required></div>
+            <div class="mb-3"><label class="form-label">Subject</label><input type="text" class="form-control" id="subject" required></div>
+            <div class="mb-3"><label class="form-label">Body</label><textarea class="form-control" id="body" rows="10" required></textarea><div class="form-text">Use placeholders like {{name}}, {{email}}, etc.</div></div>
+            <button type="submit" class="btn btn-primary">Save Template</button>
+            <button type="button" class="btn btn-secondary" id="cancel-edit-btn" style="display: none;">Cancel Edit</button>
+        </form>
+    </div>
+</div>
+<!-- Templates Table -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Subject</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="templates-tbody"></tbody>
+</table>
+<script>
+// ... (script from previous implementation)
+</script>
+{% endblock %}
