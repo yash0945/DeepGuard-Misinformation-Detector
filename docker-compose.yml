@@ -1,15 +1,11 @@
-version: '3.8'
-
 services:
   web:
     build: .
     ports:
       - "8000:8000"
     volumes:
-      # This will mount the test.db file from the host into the container
-      # ensuring that the database data persists between container restarts.
       - ./test.db:/code/test.db
     environment:
-      # You can add any environment variables here if needed
-      # For example, to set the secret key for JWT
       - SECRET_KEY=a_super_secret_key_for_docker
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
